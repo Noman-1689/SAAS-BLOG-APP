@@ -131,13 +131,13 @@ export const login = async (req, res) => {
     //   plan: user.plan || "FREE",
     // };
 
-    res.cookie("user_data", JSON.stringify(userInfo), {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    // res.cookie("user_data", JSON.stringify(userInfo), {
+    //   httpOnly: false,
+    //   secure: true,
+    //   sameSite: "none",
+    //   path: "/",
+    //   maxAge: 24 * 60 * 60 * 1000,
+    // });
 
     res.json({
       message: "Login successful",
