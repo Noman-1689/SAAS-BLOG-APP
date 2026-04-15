@@ -4,7 +4,7 @@ const baseURL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") ?? "";
 
 const api = axios.create({
   baseURL,
-  withCredentials: true, // This MUST be true
+  withCredentials: true, // Include cookies in requests
 });
 
 // Add an interceptor to include your Auth token automatically later
