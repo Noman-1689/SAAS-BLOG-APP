@@ -122,9 +122,8 @@ export const login = async (req, res) => {
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     });
-    // NOman NAeem
 
-    // // --- UPDATED: Include names in the user_data cookie ---
+    // --- UPDATED: Include names in the user_data cookie ---
     // const userInfo = {
     //   email: user.email,
     //   firstName: user.firstName, // Added
@@ -142,7 +141,7 @@ export const login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      user: userInfo,
+      // user: userInfo,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
