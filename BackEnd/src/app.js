@@ -8,45 +8,15 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-// Allow multiple origins for development and production
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://localhost:3000",
-  "https://localhost:3001",
-].filter(Boolean); // Remove undefined values
-
-console.log("Allowed CORS Origins:", allowedOrigins);
-
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.log("CORS blocked origin:", origin);
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: FRONTEND_URL,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-      "Accept",
-      "Origin",
-    ],
-    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-
-// Handle preflight OPTIONS requests explicitly
-app.options("*", cors());
 
 // Stripe Webhook logic remains the same
 app.use((req, res, next) => {
