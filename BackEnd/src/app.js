@@ -8,16 +8,40 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
-console.log("CORS Origin set to:", FRONTEND_URL); // Debug log
+// Allow multiple origins for development and production
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://localhost:3000",
+  "https://localhost:3001",
+].filter(Boolean); // Remove undefined values
+
+console.log("Allowed CORS Origins:", allowedOrigins);
 
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("CORS blocked origin:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+    ],
+    optionsSuccessStatus: 200,
   }),
 );
 
