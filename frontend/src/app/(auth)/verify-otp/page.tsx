@@ -31,6 +31,7 @@ function VerifyOTPContent() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, otp }),
+          credentials: "include",
         },
       );
 
