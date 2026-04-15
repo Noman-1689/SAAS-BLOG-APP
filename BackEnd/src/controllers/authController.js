@@ -77,66 +77,6 @@ export const verifyOTP = async (req, res) => {
   }
 };
 
-// --- Login Logic ---
-// export const login = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     const user = await prisma.user.findUnique({ where: { email } });
-//     if (!user) {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
-
-//     // NEW: Check if user is verified. If not, refresh OTP and redirect.
-//     if (!user.isVerified) {
-//       const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-//       const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min expiry
-
-//       await prisma.user.update({
-//         where: { email },
-//         data: {
-//           otp: newOtp,
-//           otpExpires: otpExpiry,
-//         },
-//       });
-
-//       // Trigger your email service here
-//       await sendOTP(email, newOtp);
-
-//       return res.status(403).json({
-//         message: "Account not verified. A new OTP has been sent to your email.",
-//         notVerified: true,
-//         email: user.email,
-//       });
-//     }
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ message: "Invalid email or password" });
-//     }
-
-//     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-//       expiresIn: "1d",
-//     });
-
-//     res.cookie("token", token, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "lax",
-//       path: "/",
-//       maxAge: 24 * 60 * 60 * 1000,
-//     });
-
-//     res.json({
-//       message: "Login successful",
-//       token,
-//       user: { id: user.id, email: user.email },
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -177,24 +117,24 @@ export const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    // --- UPDATED: Include names in the user_data cookie ---
-    const userInfo = {
-      email: user.email,
-      firstName: user.firstName, // Added
-      lastName: user.lastName, // Added
-      plan: user.plan || "FREE",
-    };
+    // // --- UPDATED: Include names in the user_data cookie ---
+    // const userInfo = {
+    //   email: user.email,
+    //   firstName: user.firstName, // Added
+    //   lastName: user.lastName, // Added
+    //   plan: user.plan || "FREE",
+    // };
 
     res.cookie("user_data", JSON.stringify(userInfo), {
       httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -213,8 +153,14 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true, // Must be true
+      sameSite: "none", // Must be "none"
+      path: "/",
+    });
+    res.clearCookie("user_data", {
+      httpOnly: false,
+      secure: true, // Must be true
+      sameSite: "none", // Must be "none"
       path: "/",
     });
     res.status(200).json({ message: "Logged out successfully" });
@@ -362,8 +308,8 @@ export const googleAuthCallback = async (req, res) => {
     // Set the cookie so the user is "logged in" for future requests
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
