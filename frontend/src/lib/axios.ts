@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseURL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") ?? "";
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "",
+  baseURL,
   withCredentials: true, // This MUST be true
 });
 
