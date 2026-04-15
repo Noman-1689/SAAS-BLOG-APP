@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Added an Enum for easier plan management
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+model User {
+  id                String      @id @default(uuid())
+  email             String      @unique
+  password          String?
+  firstName         String?
+  lastName          String?
+  isVerified        Boolean     @default(false)
+  otp               String?
+  otpExpires        DateTime?
+  googleId          String?     @unique
+  createdAt         DateTime    @default(now())
+  resetToken        String?     @unique
+  resetTokenExpires DateTime?
+
+  // --- STRIPE FIELDS ---
+  stripeCustomerId   String?     @unique
+  stripePriceId      String?
+  subscriptionId     String?     @unique
+  subscriptionStatus String?
+  stripeCurrentPeriodEnd DateTime?
+  plan               Plan        @default(FREE)
+  // ---------------------
+
+  generatedImages    AIImage[]
+  generatedArticles  Article[]
+  generatedTitles    BlogTitle[]
+
+  // ✅ NEW RELATION
+  resumeReviews      ResumeReview[]
+}
+
+model Article {
+  id        String   @id @default(uuid())
+  topic     String
+  wordCount Int
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+model BlogTitle {
+  id          String   @id @default(uuid())
+  description String
+  titles      String[]
+  createdAt   DateTime @default(now())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
+model AIImage {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  imageUrl    String   @db.Text
+  createdAt   DateTime @default(now())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
+// ✅ NEW MODEL
+model ResumeReview {
+  id        String   @id @default(uuid())
+  content   String   @db.Text   // full resume text
+  score     Int
+  feedback  String   @db.Text   // raw AI response (JSON string)
+  createdAt DateTime @default(now())
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+}

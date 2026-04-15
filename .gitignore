@@ -1,0 +1,11 @@
+# Ignore dependencies
+node_modules/
+.next/
+dist/
+
+# Ignore secrets
+.env
+.env.local
+
+# Database
+prisma/.env

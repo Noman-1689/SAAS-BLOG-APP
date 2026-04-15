@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Use a named volume here
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres_data: # Define the volume at the bottom
+
+
+# postgresql://myuser:mypassword@localhost:5432/mydatabase
