@@ -7,7 +7,14 @@ import apiRouter from "../src/routes/index.js";
 const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
-app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // Stripe Webhook logic remains the same
 app.use((req, res, next) => {
