@@ -122,6 +122,7 @@ export const login = async (req, res) => {
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     });
+    // NOman NAeem
 
     // // --- UPDATED: Include names in the user_data cookie ---
     // const userInfo = {
