@@ -117,12 +117,17 @@ export const login = async (req, res) => {
 
     console.log("Generated JWT Token:", token);
 
-    res.cookie("token", token, {
+    // res.cookie("token", token,
+    let cookieOptions = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
+    };
+    // );
+    return res.status(200).cookie("token", token, cookieOptions).json({
+      message: "Login successful",
     });
 
     // --- UPDATED: Include names in the user_data cookie ---
