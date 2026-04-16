@@ -1,14 +1,40 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation"; // Add this
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import LandingPage from "@/components/LandingPage";
 
-export default async function Home() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token");
+export default function Home() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // If logged in, send them to the dashboard sub-folder
-  if (token) {
-    redirect("/dashboard");
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+
+        if (response.ok) {
+          router.replace("/dashboard");
+          return;
+        }
+      } catch (error) {
+        console.error("Home auth check failed:", error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
+  if (isCheckingAuth) {
+    return <div className="min-h-screen bg-[#1A232E]" />;
   }
 
   return <LandingPage />;

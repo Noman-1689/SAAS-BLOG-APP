@@ -39,8 +39,8 @@ export const useLoginMutation = () => {
     mutationFn: (data: { email: string; password: string }) => loginUser(data),
     onSuccess: (res) => {
       toast.success(res.message || "Login successful");
-      // Redirect to dashboard or home
-      router.push("/");
+      // Go directly to dashboard after successful auth.
+      router.push("/dashboard");
     },
     onError: (error: any) => {
       const errorData = error.response?.data;
