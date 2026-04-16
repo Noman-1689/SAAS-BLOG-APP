@@ -40,7 +40,7 @@ export const useLoginMutation = () => {
     onSuccess: (res) => {
       toast.success(res.message || "Login successful");
       // Go directly to dashboard after successful auth.
-      router.push("/dashboard");
+      router.push("/");
     },
     onError: (error: any) => {
       const errorData = error.response?.data;
