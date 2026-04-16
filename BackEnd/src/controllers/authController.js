@@ -118,10 +118,11 @@ export const login = async (req, res) => {
     console.log("Generated JWT Token:", token);
 
     // res.cookie("token", token,
+    const isProduction = process.env.NODE_ENV === "production";
     let cookieOptions = {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction, // true in production (HTTPS), false in development
+      sameSite: isProduction ? "none" : "lax", // "none" for cross-site in prod, "lax" for same-site in dev
       path: "/",
       maxAge: 24 * 60 * 60 * 1000,
     };
@@ -158,16 +159,17 @@ export const login = async (req, res) => {
 // --- Logout Logic ---
 export const logout = async (req, res) => {
   try {
+    const isProduction = process.env.NODE_ENV === "production";
     res.clearCookie("token", {
       httpOnly: true,
-      secure: true, // Must be true
-      sameSite: "none", // Must be "none"
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
     });
     res.clearCookie("user_data", {
       httpOnly: false,
-      secure: true, // Must be true
-      sameSite: "none", // Must be "none"
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       path: "/",
     });
     res.status(200).json({ message: "Logged out successfully" });
@@ -313,10 +315,11 @@ export const googleAuthCallback = async (req, res) => {
     });
 
     // Set the cookie so the user is "logged in" for future requests
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
